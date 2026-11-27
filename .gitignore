@@ -1,0 +1,21 @@
+# Arquivos do sistema operacional e editores
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.log
+*.bak
+*~
+.vscode/
+.idea/
+
+# Cópias e backups locais (fora do conteúdo publicável)
+MeuPlanejadorViagens_backup_*/
+MeuPlanejadorViagens - Copia/
+*.zip
+
+# Ambiente local
+.env
+.env.*
+node_modules/
+__pycache__/

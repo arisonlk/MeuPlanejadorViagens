@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Planeje suas viagens, calcule custos e organize seus trajetos em um só lugar.">
+    <meta name="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta name="pragma" content="no-cache">
+    <meta name="expires" content="0">
+    <title>Meu Planejador de Viagens</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="css/style.css?v=9">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+</head>
+<body>
+    <div class="layout">
+
+        <aside class="sidebar" id="sidebar" aria-label="Menu lateral">
+            <div class="sidebar-cabecalho">
+                <span class="sidebar-icone" aria-hidden="true">&#129517;</span>
+                <div class="sidebar-identificacao">
+                    <strong>Meu Planejador de Viagens</strong>
+                    <span>Uso pessoal</span>
+                </div>
+            </div>
+
+            <nav class="menu" aria-label="Navegação principal">
+                <a class="menu-link ativo" href="#inicio" aria-current="location"><span class="menu-icone" aria-hidden="true">&#127968;</span>Início</a>
+                <a class="menu-link" href="#mapa"><span class="menu-icone" aria-hidden="true">&#128506;</span>Mapa e Rotas</a>
+                <a class="menu-link" href="#combustivel"><span class="menu-icone" aria-hidden="true">&#9981;</span>Combustível</a>
+                <a class="menu-link" href="#tempo-velocidade"><span class="menu-icone" aria-hidden="true">&#9201;</span>Tempo e Velocidade</a>
+                <a class="menu-link" href="#pedagios-despesas"><span class="menu-icone" aria-hidden="true">&#128176;</span>Pedágios e Despesas</a>
+                <a class="menu-link" href="#resumo-financeiro"><span class="menu-icone" aria-hidden="true">&#128203;</span>Resumo Financeiro</a>
+                <a class="menu-link" href="#painel-viagem"><span class="menu-icone" aria-hidden="true">&#128202;</span>Painel da Viagem</a>
+                <a class="menu-link" href="#historico"><span class="menu-icone" aria-hidden="true">&#128218;</span>Histórico de Viagens</a>
+            </nav>
+
+            <div class="sidebar-rodape">
+                <span>Seus planos, no seu computador.</span>
+            </div>
+        </aside>
+
+        <div class="area-principal">
+            <header class="barra-superior">
+                <button type="button" class="botao-menu" id="botao-menu" aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false">
+                    <span aria-hidden="true">&#9776;</span>
+                </button>
+                <span class="barra-titulo">Painel de planejamento</span>
+            </header>
+
+            <main>
+                <section class="hero" id="inicio" tabindex="-1">
+                    <div class="hero-conteudo">
+                        <span class="hero-etiqueta">Bem-vindo</span>
+                        <h1>Meu Planejador de Viagens</h1>
+                        <p>Planeje suas viagens, calcule custos e organize seus trajetos em um só lugar.</p>
+                        <div class="hero-acoes">
+                            <a class="botao botao-claro" href="#mapa">Começar pelo mapa</a>
+                            <a class="botao botao-contorno" href="#combustivel">Calcular combustível</a>
+                        </div>
+                    </div>
+                    <div class="hero-decoracao" aria-hidden="true"></div>
+                </section>
+
+                <nav class="grade-cards" aria-label="Atalhos do planejamento">
+                    <a class="card-atelho" href="#mapa">
+                        <span class="card-icone" aria-hidden="true">&#128506;</span>
+                        <strong>Mapa e Rotas</strong>
+                        <span>Trace origem, destino e paradas.</span>
+                    </a>
+                    <a class="card-atelho" href="#combustivel">
+                        <span class="card-icone" aria-hidden="true">&#9981;</span>
+                        <strong>Combustível</strong>
+                        <span>Estime litros e custo da viagem.</span>
+                    </a>
+                    <a class="card-atelho" href="#resumo-financeiro">
+                        <span class="card-icone" aria-hidden="true">&#128203;</span>
+                        <strong>Resumo Financeiro</strong>
+                        <span>Visão completa dos seus gastos.</span>
+                    </a>
+                    <a class="card-atelho" href="#painel-viagem">
+                        <span class="card-icone" aria-hidden="true">&#128202;</span>
+                        <strong>Painel da Viagem</strong>
+                        <span>Orçamento, atividades e programação.</span>
+                    </a>
+                </nav>
+
+                <section class="secao" id="mapa" tabindex="-1">
+                    <div class="secao-cabecalho">
+                        <h2>Mapa e Rotas</h2>
+                        <span class="etiqueta-etapa etiqueta-em-uso">Em uso</span>
+                    </div>
+                    <p>Pesquise cidades ou endereços, selecione origem e destino e calcule a rota. Distância e duração vêm dos serviços indicados abaixo.</p>
+
+                    <form class="formulario-rota" id="formulario-rota" autocomplete="off">
+                        <div class="campo-rota">
+                            <label for="origem">Origem</label>
+                            <div class="campo-sugestoes">
+                                <input type="text" id="origem" name="origem" placeholder="Ex.: São Paulo, SP" role="combobox" aria-autocomplete="list" aria-controls="sugestoes-origem" aria-expanded="false">
+                                <div class="sugestoes" id="sugestoes-origem" role="listbox" aria-label="Sugestões de origem" hidden></div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="botao-inverter" id="botao-inverter" aria-label="Inverter origem e destino" title="Inverter origem e destino">
+                            <span aria-hidden="true">&#8645;</span>
+                        </button>
+
+                        <div class="campo-rota">
+                            <label for="destino">Destino</label>
+                            <div class="campo-sugestoes">
+                                <input type="text" id="destino" name="destino" placeholder="Ex.: Rio de Janeiro, RJ" role="combobox" aria-autocomplete="list" aria-controls="sugestoes-destino" aria-expanded="false">
+                                <div class="sugestoes" id="sugestoes-destino" role="listbox" aria-label="Sugestões de destino" hidden></div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="acoes-rota">
+                        <button type="button" class="botao-primario" id="botao-calcular-rota">Calcular rota</button>
+                        <button type="button" class="botao-secundario" id="botao-limpar-rota">Limpar rota</button>
+                    </div>
+
+                    <p class="aviso-rota" id="aviso-rota" role="status" aria-live="polite" hidden></p>
+
+                    <div class="mapa-leaflet" id="mapa-leaflet" role="application" aria-label="Mapa interativo com a rota calculada"></div>
+
+                    <div class="resultados-rota" id="resultados-rota" hidden>
+                        <div class="card-resultado">
+                            <span>Distância total</span>
+                            <strong id="resultado-distancia">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Tempo estimado</span>
+                            <strong id="resultado-duracao">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Origem</span>
+                            <strong id="resultado-origem">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Destino</span>
+                            <strong id="resultado-destino">&mdash;</strong>
+                        </div>
+                    </div>
+
+                    <p class="fonte-dados">Mapas e busca: &copy; OpenStreetMap / Nominatim. Cálculo de rota: OSRM. Nenhum dado é enviado para servidores próprios.</p>
+                </section>
+
+                <section class="secao" id="combustivel" tabindex="-1">
+                    <div class="secao-cabecalho">
+                        <h2>Combustível</h2>
+                        <span class="etiqueta-etapa etiqueta-em-uso">Em uso</span>
+                    </div>
+                    <p>Informe o veículo e os dados da viagem. Os resultados são atualizados automaticamente. O preço do combustível é sempre informado por você.</p>
+
+                    <form class="formulario-combustivel" id="formulario-combustivel" autocomplete="off">
+                        <fieldset class="bloco-campos">
+                            <legend>Dados do veículo</legend>
+                            <div class="grid-campos">
+                                <div class="campo-form">
+                                    <label for="veiculo-nome">Nome do veículo</label>
+                                    <input type="text" id="veiculo-nome" maxlength="60" placeholder="Ex.: Fiat Uno 1.0">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="veiculo-combustivel">Tipo de combustível</label>
+                                    <select id="veiculo-combustivel">
+                                        <option value="gasolina">Gasolina</option>
+                                        <option value="etanol">Etanol</option>
+                                        <option value="diesel">Diesel</option>
+                                    </select>
+                                </div>
+                                <div class="campo-form">
+                                    <label for="consumo-cidade">Consumo na cidade (km/l)</label>
+                                    <input type="number" id="consumo-cidade" min="0.1" step="0.1" inputmode="decimal" placeholder="Ex.: 10">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="consumo-estrada">Consumo na estrada (km/l)</label>
+                                    <input type="number" id="consumo-estrada" min="0.1" step="0.1" inputmode="decimal" placeholder="Ex.: 12">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="consumo-medio">Consumo médio utilizado (km/l)</label>
+                                    <input type="text" id="consumo-medio" readonly aria-describedby="ajuda-consumo-medio">
+                                    <small id="ajuda-consumo-medio">Calculado conforme o tipo de percurso e os percentuais informados.</small>
+                                </div>
+                            </div>
+                            <p class="aviso-salvamento" id="aviso-veiculo" role="status" aria-live="polite" hidden></p>
+                        </fieldset>
+
+                        <fieldset class="bloco-campos">
+                            <legend>Dados da viagem</legend>
+                            <div class="grid-campos">
+                                <div class="campo-form">
+                                    <label for="distancia-viagem">Distância total (km)</label>
+                                    <div class="linha-campo">
+                                        <input type="number" id="distancia-viagem" min="0.1" step="0.1" inputmode="decimal" placeholder="Ex.: 442,8">
+                                        <button type="button" class="botao-pequeno" id="botao-usar-rota" disabled>Usar rota</button>
+                                    </div>
+                                    <small id="origem-distancia">Informe a distância manualmente ou calcule uma rota no mapa.</small>
+                                </div>
+                                <div class="campo-form">
+                                    <label for="preco-combustivel">Preço do combustível (R$/litro)</label>
+                                    <input type="number" id="preco-combustivel" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 6,00">
+                                    <small>Informe o preço praticado na sua região.</small>
+                                </div>
+                                <div class="campo-form">
+                                    <label for="tipo-percurso">Tipo de percurso</label>
+                                    <select id="tipo-percurso">
+                                        <option value="estrada">Estrada</option>
+                                        <option value="cidade">Cidade</option>
+                                        <option value="misto">Misto</option>
+                                    </select>
+                                </div>
+                                <div class="campo-form" id="campo-percentual" hidden>
+                                    <label for="percentual-urbano">Percurso urbano (%)</label>
+                                    <input type="number" id="percentual-urbano" min="0" max="100" step="1" inputmode="numeric" value="50">
+                                </div>
+                                <label class="campo-check" for="ida-volta">
+                                    <input type="checkbox" id="ida-volta">
+                                    <span>Considerar ida e volta nos resultados</span>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <div class="acoes-rota">
+                            <button type="button" class="botao-primario" id="botao-calcular-combustivel">Calcular</button>
+                            <button type="button" class="botao-secundario" id="botao-limpar-combustivel">Limpar campos</button>
+                        </div>
+                    </form>
+
+                    <p class="aviso-rota erro" id="aviso-combustivel" role="alert" hidden></p>
+
+                    <div class="resultados-combustivel" id="resultados-combustivel" hidden>
+                        <div class="card-resultado">
+                            <span>Distância da viagem</span>
+                            <strong id="combustivel-distancia">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Consumo do veículo</span>
+                            <strong id="combustivel-consumo">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Litros necessários</span>
+                            <strong id="combustivel-litros">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Preço por litro</span>
+                            <strong id="combustivel-preco">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Custo total</span>
+                            <strong id="combustivel-custo">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Custo por km</span>
+                            <strong id="combustivel-custo-km">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Litros para ida e volta</span>
+                            <strong id="combustivel-litros-ida-volta">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Custo de ida e volta</span>
+                            <strong id="combustivel-custo-ida-volta">&mdash;</strong>
+                        </div>
+                    </div>
+
+                    <p class="fonte-dados">Todos os cálculos são feitos localmente no navegador. No percurso misto, o consumo médio é ponderado pelo tempo de combustível: 1 / ((urbano% / consumo urbano) + (rodoviário% / consumo rodoviário)).</p>
+                </section>
+
+                <section class="secao" id="tempo-velocidade" tabindex="-1">
+                    <div class="secao-cabecalho">
+                        <h2>Tempo e Velocidade</h2>
+                        <span class="etiqueta-etapa etiqueta-em-uso">Em uso</span>
+                    </div>
+                    <p>Compare o tempo teórico de viagem nas velocidades selecionadas. A distância pode vir da rota calculada no mapa ou ser informada manualmente.</p>
+
+                    <form class="formulario-velocidade" id="formulario-velocidade" autocomplete="off">
+                        <fieldset class="bloco-campos">
+                            <legend>Dados da viagem</legend>
+                            <div class="grid-campos">
+                                <div class="campo-form">
+                                    <label for="distancia-velocidade">Distância total (km)</label>
+                                    <div class="linha-campo">
+                                        <input type="number" id="distancia-velocidade" min="0.1" step="0.1" inputmode="decimal" placeholder="Ex.: 442,8">
+                                        <button type="button" class="botao-pequeno" id="botao-velocidade-usar-rota" disabled>Usar rota</button>
+                                    </div>
+                                    <small id="origem-distancia-velocidade">Informe a distância manualmente ou calcule uma rota no mapa.</small>
+                                </div>
+                                <label class="campo-check" for="velocidade-ida-volta">
+                                    <input type="checkbox" id="velocidade-ida-volta">
+                                    <span>Considerar ida e volta</span>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="bloco-campos">
+                            <legend>Velocidades para comparação</legend>
+                            <div class="opcoes-velocidade" id="opcoes-velocidade">
+                                <label class="opcao-velocidade selecionada">
+                                    <input type="checkbox" id="vel-80" value="80" checked>
+                                    <span>80 km/h</span>
+                                </label>
+                                <label class="opcao-velocidade selecionada">
+                                    <input type="checkbox" id="vel-120" value="120" checked>
+                                    <span>120 km/h</span>
+                                </label>
+                                <label class="opcao-velocidade selecionada">
+                                    <input type="checkbox" id="vel-140" value="140" checked>
+                                    <span>140 km/h</span>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <div class="acoes-rota">
+                            <button type="button" class="botao-primario" id="botao-calcular-velocidade">Calcular</button>
+                            <button type="button" class="botao-secundario" id="botao-limpar-velocidade">Limpar campos</button>
+                        </div>
+                    </form>
+
+                    <p class="aviso-rota erro" id="aviso-velocidade" role="alert" hidden></p>
+
+                    <div class="resultados-velocidade" id="resultados-velocidade" hidden>
+                        <div class="cards-velocidade" id="cards-velocidade"></div>
+                        <div class="grafico-velocidade">
+                            <h3>Comparativo de duração da viagem</h3>
+                            <div class="grafico-barras" id="grafico-barras" role="img" aria-label="Gráfico comparativo da duração da viagem"></div>
+                        </div>
+                    </div>
+
+                    <div class="aviso-teorico">
+                        <strong>Atenção:</strong> os resultados são teóricos. Não consideram trânsito, paradas, pedágios, clima nem limites de velocidade da via.
+                    </div>
+                </section>
+
+                <section class="secao" id="pedagios-despesas" tabindex="-1">
+                    <div class="secao-cabecalho">
+                        <h2>Pedágios e Despesas</h2>
+                        <span class="etiqueta-etapa etiqueta-em-uso">Em uso</span>
+                    </div>
+                    <p>Todos os valores são informados manualmente. Nenhum preço é consultado ou inventado. Os registros ficam salvos neste navegador.</p>
+
+                    <fieldset class="bloco-campos">
+                        <legend>Pedágios</legend>
+                        <form class="formulario-despesa" id="formulario-pedagio" autocomplete="off">
+                            <div class="grid-campos">
+                                <div class="campo-form">
+                                    <label for="pedagio-nome">Nome ou localização</label>
+                                    <input type="text" id="pedagio-nome" maxlength="80" placeholder="Ex.: Pedágio de São José dos Campos">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="pedagio-rodovia">Rodovia</label>
+                                    <input type="text" id="pedagio-rodovia" maxlength="40" placeholder="Ex.: BR-116">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="pedagio-valor">Valor (R$)</label>
+                                    <input type="number" id="pedagio-valor" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 12,50">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="pedagio-sentido">Sentido da viagem</label>
+                                    <select id="pedagio-sentido">
+                                        <option value="ida">Ida</option>
+                                        <option value="volta">Volta</option>
+                                    </select>
+                                </div>
+                                <div class="campo-form campo-largo">
+                                    <label for="pedagio-observacao">Observação</label>
+                                    <input type="text" id="pedagio-observacao" maxlength="120" placeholder="Opcional">
+                                </div>
+                            </div>
+                            <div class="acoes-rota">
+                                <button type="submit" class="botao-primario" id="botao-salvar-pedagio">Adicionar pedágio</button>
+                                <button type="button" class="botao-secundario" id="botao-cancelar-pedagio" hidden>Cancelar edição</button>
+                            </div>
+                            <p class="aviso-rota erro" id="aviso-pedagio" role="alert" hidden></p>
+                        </form>
+
+                        <div class="tabela-responsiva">
+                            <table class="tabela-despesas">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Localização</th>
+                                        <th scope="col">Rodovia</th>
+                                        <th scope="col">Sentido</th>
+                                        <th scope="col">Valor</th>
+                                        <th scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-pedagios"></tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="bloco-campos">
+                        <legend>Outras despesas</legend>
+                        <form class="formulario-despesa" id="formulario-despesa" autocomplete="off">
+                            <div class="grid-campos">
+                                <div class="campo-form">
+                                    <label for="despesa-descricao">Descrição</label>
+                                    <input type="text" id="despesa-descricao" maxlength="80" placeholder="Ex.: Almoço na viagem">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="despesa-categoria">Categoria</label>
+                                    <select id="despesa-categoria">
+                                        <option value="Alimentação">Alimentação</option>
+                                        <option value="Hospedagem">Hospedagem</option>
+                                        <option value="Estacionamento">Estacionamento</option>
+                                        <option value="Manutenção">Manutenção</option>
+                                        <option value="Outros">Outros</option>
+                                    </select>
+                                </div>
+                                <div class="campo-form">
+                                    <label for="despesa-valor">Valor (R$)</label>
+                                    <input type="number" id="despesa-valor" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 80,00">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="despesa-data">Data</label>
+                                    <input type="date" id="despesa-data">
+                                </div>
+                                <div class="campo-form campo-largo">
+                                    <label for="despesa-observacao">Observação</label>
+                                    <input type="text" id="despesa-observacao" maxlength="120" placeholder="Opcional">
+                                </div>
+                            </div>
+                            <div class="acoes-rota">
+                                <button type="submit" class="botao-primario" id="botao-salvar-despesa">Adicionar despesa</button>
+                                <button type="button" class="botao-secundario" id="botao-cancelar-despesa" hidden>Cancelar edição</button>
+                            </div>
+                            <p class="aviso-rota erro" id="aviso-despesa" role="alert" hidden></p>
+                        </form>
+
+                        <div class="tabela-responsiva">
+                            <table class="tabela-despesas">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Descrição</th>
+                                        <th scope="col">Categoria</th>
+                                        <th scope="col">Data</th>
+                                        <th scope="col">Valor</th>
+                                        <th scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-despesas"></tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+
+                    <div class="resultados-despesas" id="resultados-despesas">
+                        <div class="card-resultado">
+                            <span>Total de pedágios (ida)</span>
+                            <strong id="total-pedagios-ida">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Total de pedágios (volta)</span>
+                            <strong id="total-pedagios-volta">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Total de pedágios</span>
+                            <strong id="total-pedagios">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Outras despesas</span>
+                            <strong id="total-outras-despesas">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado card-total-geral">
+                            <span>Total geral</span>
+                            <strong id="total-geral-despesas">&mdash;</strong>
+                        </div>
+                    </div>
+
+                    <p class="fonte-dados">Os valores desta seção são informados pelo usuário e permanecem apenas no armazenamento local do navegador.</p>
+                </section>
+
+                <section class="secao" id="resumo-financeiro" tabindex="-1">
+                    <div class="secao-cabecalho">
+                        <h2>Resumo Financeiro</h2>
+                        <span class="etiqueta-etapa etiqueta-em-uso">Em uso</span>
+                    </div>
+                    <p>Este painel reúne automaticamente os dados já informados nas outras seções. Nenhum valor é solicitado novamente.</p>
+
+                    <div class="resultados-financeiros" id="resultados-financeiros">
+                        <div class="card-resultado">
+                            <span>Custo total de combustível</span>
+                            <strong id="resumo-combustivel">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Total de pedágios</span>
+                            <strong id="resumo-pedagios">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Total de outras despesas</span>
+                            <strong id="resumo-despesas">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado card-total-geral">
+                            <span>Custo total da viagem</span>
+                            <strong id="resumo-total">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Custo por quilômetro</span>
+                            <strong id="resumo-custo-km">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Distância total</span>
+                            <strong id="resumo-distancia">&mdash;</strong>
+                        </div>
+                    </div>
+
+                    <p class="fonte-dados" id="origem-distancia-resumo">Distância não informada.</p>
+
+                    <fieldset class="bloco-campos">
+                        <legend>Divisão de custos</legend>
+                        <div class="grid-campos">
+                            <div class="campo-form">
+                                <label for="numero-viajantes">Número de viajantes</label>
+                                <input type="number" id="numero-viajantes" min="1" step="1" inputmode="numeric" value="1">
+                            </div>
+                        </div>
+                        <p class="aviso-rota erro" id="aviso-viajantes" role="alert" hidden></p>
+
+                        <div class="resultados-financeiros divisao-viajantes">
+                            <div class="card-resultado">
+                                <span>Custo total por pessoa</span>
+                                <strong id="por-pessoa-total">&mdash;</strong>
+                            </div>
+                            <div class="card-resultado">
+                                <span>Combustível por pessoa</span>
+                                <strong id="por-pessoa-combustivel">&mdash;</strong>
+                            </div>
+                            <div class="card-resultado">
+                                <span>Pedágios por pessoa</span>
+                                <strong id="por-pessoa-pedagios">&mdash;</strong>
+                            </div>
+                            <div class="card-resultado">
+                                <span>Despesas por pessoa</span>
+                                <strong id="por-pessoa-despesas">&mdash;</strong>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="grafico-velocidade">
+                        <h3>Distribuição das despesas</h3>
+                        <div class="grafico-barras" id="grafico-despesas" role="img" aria-label="Gráfico de distribuição das despesas da viagem"></div>
+                    </div>
+
+                    <p class="fonte-dados">Os dados vêm dos estados compartilhados dos módulos. Se uma seção ainda não foi preenchida, seu valor é considerado R$ 0,00.</p>
+                </section>
+
+                <section class="secao" id="historico" tabindex="-1">
+                    <div class="secao-cabecalho">
+                        <h2>Histórico de Viagens</h2>
+                        <span class="etiqueta-etapa etiqueta-em-uso">Em uso</span>
+                    </div>
+                    <p>Viagens concluídas ficam salvas apenas neste navegador. Os valores são capturados do resumo financeiro; nenhum cálculo é refeito aqui.</p>
+
+                    <fieldset class="bloco-campos">
+                        <legend>Salvar viagem concluída</legend>
+                        <form class="formulario-despesa" id="formulario-historico" autocomplete="off">
+                            <div class="grid-campos">
+                                <div class="campo-form campo-largo">
+                                    <label for="viagem-titulo">Nome da viagem</label>
+                                    <input type="text" id="viagem-titulo" maxlength="80" placeholder="Ex.: Viagem São Paulo - Rio de Janeiro">
+                                    <small>Você pode editar este nome antes de salvar.</small>
+                                </div>
+                                <div class="campo-form">
+                                    <label for="viagem-origem">Origem</label>
+                                    <input type="text" id="viagem-origem" readonly placeholder="Defina a origem no mapa">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="viagem-destino">Destino</label>
+                                    <input type="text" id="viagem-destino" readonly placeholder="Defina o destino no mapa">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="viagem-distancia">Distância (km)</label>
+                                    <input type="text" id="viagem-distancia" readonly placeholder="—">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="viagem-data">Data da viagem</label>
+                                    <input type="date" id="viagem-data">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="viagem-combustivel">Combustível</label>
+                                    <input type="text" id="viagem-combustivel" readonly placeholder="R$ 0,00">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="viagem-pedagios">Pedágios</label>
+                                    <input type="text" id="viagem-pedagios" readonly placeholder="R$ 0,00">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="viagem-outras">Outras despesas</label>
+                                    <input type="text" id="viagem-outras" readonly placeholder="R$ 0,00">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="viagem-total">Custo total</label>
+                                    <input type="text" id="viagem-total" readonly placeholder="R$ 0,00">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="viagem-viajantes">Viajantes</label>
+                                    <input type="text" id="viagem-viajantes" readonly placeholder="—">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="viagem-por-pessoa">Custo por pessoa</label>
+                                    <input type="text" id="viagem-por-pessoa" readonly placeholder="R$ 0,00">
+                                </div>
+                            </div>
+                            <div class="acoes-rota">
+                                <button type="submit" class="botao-primario" id="botao-salvar-viagem">Salvar viagem</button>
+                            </div>
+                        </form>
+                        <p class="aviso-rota erro" id="aviso-historico" role="alert" aria-live="polite" hidden></p>
+                    </fieldset>
+
+                    <div class="acoes-rota">
+                        <button type="button" class="botao-secundario" id="botao-limpar-historico">Limpar histórico</button>
+                    </div>
+
+                    <h3>Viagens salvas</h3>
+                    <div class="tabela-responsiva">
+                        <table class="tabela-despesas">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nome da viagem</th>
+                                    <th scope="col">Origem e destino</th>
+                                    <th scope="col">Data</th>
+                                    <th scope="col">Distância</th>
+                                    <th scope="col">Custo total</th>
+                                    <th scope="col">Custo/pessoa</th>
+                                    <th scope="col">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-historico"></tbody>
+                        </table>
+                    </div>
+
+                    <dialog class="dialog-detalhes" id="dialog-detalhes-viagem" aria-labelledby="detalhes-titulo">
+                        <div class="dialog-cabecalho">
+                            <h3 id="detalhes-titulo">Detalhes da viagem</h3>
+                            <button type="button" class="botao-tabela" id="botao-fechar-detalhes">Fechar</button>
+                        </div>
+                        <dl class="detalhes-lista" id="detalhes-conteudo"></dl>
+                    </dialog>
+
+                    <p class="fonte-dados">O PDF é gerado por biblioteca gratuita carregada sob demanda. Se ela não carregar, uma mensagem será exibida; o histórico continua funcionando sem internet.</p>
+                </section>
+
+                <section class="secao secao-painel" id="painel-viagem" tabindex="-1">
+                    <div class="secao-cabecalho">
+                        <h2>Painel da Viagem</h2>
+                        <span class="etiqueta-etapa etiqueta-em-uso">Em uso</span>
+                    </div>
+                    <p>Organize a viagem em um único lugar. O custo realizado parte do resumo financeiro já aprovado; lançamentos importados apenas mostram os registros originais e não são somados novamente.</p>
+
+                    <fieldset class="bloco-campos">
+                        <legend>Dados da viagem</legend>
+                        <form class="formulario-despesa formulario-viagem" id="formulario-painel-viagem" autocomplete="off">
+                            <div class="grid-campos">
+                                <div class="campo-form campo-largo">
+                                    <label for="painel-nome">Nome da viagem</label>
+                                    <input type="text" id="painel-nome" maxlength="100" placeholder="Ex.: Viagem São Paulo - Rio de Janeiro">
+                                    <small>Salvo automaticamente neste navegador.</small>
+                                </div>
+                                <div class="campo-form">
+                                    <label for="painel-data-inicial">Data inicial</label>
+                                    <input type="date" id="painel-data-inicial">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="painel-data-final">Data final</label>
+                                    <input type="date" id="painel-data-final">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="painel-orcamento">Orçamento total (R$)</label>
+                                    <input type="number" id="painel-orcamento" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 1500,00">
+                                    <small>Deixe em branco ou zero para não calcular o percentual.</small>
+                                </div>
+                                <div class="campo-form">
+                                    <label for="painel-moeda">Moeda</label>
+                                    <input type="text" id="painel-moeda" value="BRL" readonly>
+                                </div>
+                            </div>
+                        </form>
+                        <p class="aviso-rota" id="aviso-painel-viagem" role="status" aria-live="polite" hidden></p>
+                    </fieldset>
+
+                    <div class="resultados-financeiros painel-indicadores">
+                        <div class="card-resultado">
+                            <span>Data inicial</span>
+                            <strong id="painel-kpi-inicio">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Data final</span>
+                            <strong id="painel-kpi-fim">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Orçamento planejado</span>
+                            <strong id="painel-kpi-orcamento">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado card-total-geral">
+                            <span>Custo total realizado</span>
+                            <strong id="painel-kpi-realizado">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Saldo restante</span>
+                            <strong id="painel-kpi-saldo">&mdash;</strong>
+                        </div>
+                        <div class="card-resultado">
+                            <span>Orçamento utilizado</span>
+                            <strong id="painel-kpi-percentual">&mdash;</strong>
+                        </div>
+                    </div>
+
+                    <div class="painel-barra">
+                        <div class="barra-linha">
+                            <span class="barra-etiqueta">Base do resumo</span>
+                            <div class="barra-fundo">
+                                <div class="barra-preenchimento" id="painel-barra-orcamento" style="width: 0%"></div>
+                            </div>
+                            <span class="barra-valor" id="painel-kpi-base-resumo">&mdash;</span>
+                        </div>
+                        <div class="painel-barra-detalhes">
+                            <span>A barra mostra o percentual do orçamento utilizado.</span>
+                            <span>Lançamentos do painel: <strong id="painel-kpi-novos">&mdash;</strong></span>
+                            <span>Viagens no histórico: <strong id="painel-kpi-historico">0</strong></span>
+                        </div>
+                    </div>
+
+                    <p class="aviso-rota" id="aviso-painel-calculos" role="status" aria-live="polite" hidden></p>
+
+                    <div class="acoes-rota painel-integracao">
+                        <button type="button" class="botao-primario" id="botao-importar-despesas">Importar despesas do resumo</button>
+                        <button type="button" class="botao-secundario" id="botao-ir-historico">Ver histórico de viagens</button>
+                    </div>
+
+                    <div class="painel-colunas">
+                        <fieldset class="bloco-campos">
+                            <legend>Lançamentos</legend>
+                            <form class="formulario-despesa formulario-lancamento" id="formulario-lancamento" autocomplete="off">
+                                <div class="grid-campos">
+                                    <div class="campo-form campo-largo">
+                                        <label for="lancamento-descricao">Descrição</label>
+                                        <input type="text" id="lancamento-descricao" maxlength="120" placeholder="Ex.: Reserva do hotel">
+                                    </div>
+                                    <div class="campo-form">
+                                        <label for="lancamento-categoria">Categoria</label>
+                                        <select id="lancamento-categoria">
+                                            <option>Hospedagem</option>
+                                            <option>Avião</option>
+                                            <option>Ônibus</option>
+                                            <option>Transporte</option>
+                                            <option>Estacionamento</option>
+                                            <option>Internet e comunicação</option>
+                                            <option>Ingressos</option>
+                                            <option>Atividades</option>
+                                            <option>Seguro</option>
+                                            <option>Alimentação</option>
+                                            <option>Outras despesas</option>
+                                        </select>
+                                    </div>
+                                    <div class="campo-form">
+                                        <label for="lancamento-valor">Valor gasto (R$)</label>
+                                        <input type="number" id="lancamento-valor" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 450,00">
+                                    </div>
+                                    <div class="campo-form">
+                                        <label for="lancamento-data">Data de pagamento/vencimento</label>
+                                        <input type="date" id="lancamento-data">
+                                    </div>
+                                    <div class="campo-form">
+                                        <label for="lancamento-situacao">Situação</label>
+                                        <select id="lancamento-situacao">
+                                            <option value="pago">Pago</option>
+                                            <option value="pendente">Pendente</option>
+                                        </select>
+                                    </div>
+                                    <div class="campo-form">
+                                        <label for="lancamento-planejado">Valor planejado (R$)</label>
+                                        <input type="number" id="lancamento-planejado" min="0" step="0.01" inputmode="decimal" placeholder="Opcional">
+                                    </div>
+                                </div>
+                                <div class="acoes-rota">
+                                    <button type="submit" class="botao-primario" id="botao-salvar-lancamento">Salvar lançamento</button>
+                                    <button type="button" class="botao-secundario" id="botao-cancelar-lancamento">Cancelar edição</button>
+                                </div>
+                            </form>
+                            <p class="aviso-rota erro" id="aviso-lancamento" role="alert" aria-live="polite" hidden></p>
+
+                            <div class="tabela-responsiva">
+                                <table class="tabela-despesas tabela-painel">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Descrição</th>
+                                            <th scope="col">Categoria</th>
+                                            <th scope="col">Gasto</th>
+                                            <th scope="col">Data</th>
+                                            <th scope="col">Situação</th>
+                                            <th scope="col">Planejado</th>
+                                            <th scope="col">Origem</th>
+                                            <th scope="col">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lista-lancamentos"></tbody>
+                                </table>
+                            </div>
+                            <div class="painel-total-linha">
+                                <span>Total dos lançamentos do painel</span>
+                                <strong id="total-lancamentos">&mdash;</strong>
+                                <button type="button" class="botao-tabela excluir" id="botao-limpar-lancamentos">Limpar lançamentos do painel</button>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="bloco-campos">
+                            <legend>Categorias</legend>
+                            <form class="formulario-despesa formulario-categoria" id="formulario-categoria" autocomplete="off">
+                                <div class="grid-campos">
+                                    <div class="campo-form campo-largo">
+                                        <label for="categoria-nome">Nome da categoria</label>
+                                        <input type="text" id="categoria-nome" maxlength="60" placeholder="Ex.: Passagens">
+                                    </div>
+                                </div>
+                                <div class="acoes-rota">
+                                    <button type="submit" class="botao-primario" id="botao-salvar-categoria">Adicionar categoria</button>
+                                    <button type="button" class="botao-secundario" id="botao-cancelar-categoria">Cancelar edição</button>
+                                </div>
+                            </form>
+                            <p class="aviso-rota erro" id="aviso-categoria" role="alert" aria-live="polite" hidden></p>
+                            <div class="lista-categorias" id="lista-categorias" aria-label="Categorias cadastradas"></div>
+                        </fieldset>
+                    </div>
+
+                    <fieldset class="bloco-campos">
+                        <legend>Programação da viagem</legend>
+                        <form class="formulario-despesa formulario-atividade" id="formulario-atividade" autocomplete="off">
+                            <div class="grid-campos">
+                                <div class="campo-form">
+                                    <label for="atividade-data">Data</label>
+                                    <input type="date" id="atividade-data">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="atividade-hora-inicial">Horário inicial</label>
+                                    <input type="time" id="atividade-hora-inicial">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="atividade-hora-final">Horário final</label>
+                                    <input type="time" id="atividade-hora-final">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="atividade-duracao">Duração (horas)</label>
+                                    <input type="number" id="atividade-duracao" min="0" step="0.25" inputmode="decimal" placeholder="Ex.: 2,5">
+                                    <small>Informe a duração ou o horário inicial e final.</small>
+                                </div>
+                                <div class="campo-form">
+                                    <label for="atividade-cidade">Cidade</label>
+                                    <input type="text" id="atividade-cidade" maxlength="80" placeholder="Ex.: Rio de Janeiro">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="atividade-tipo">Tipo</label>
+                                    <input type="text" id="atividade-tipo" maxlength="60" placeholder="Ex.: Passeio">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="atividade-descricao">Descrição</label>
+                                    <input type="text" id="atividade-descricao" maxlength="120" placeholder="Ex.: Visita ao museu">
+                                </div>
+                                <div class="campo-form campo-largo">
+                                    <label for="atividade-observacoes">Observações</label>
+                                    <input type="text" id="atividade-observacoes" maxlength="300" placeholder="Opcional">
+                                </div>
+                            </div>
+                            <div class="acoes-rota">
+                                <button type="submit" class="botao-primario" id="botao-salvar-atividade">Salvar atividade</button>
+                                <button type="button" class="botao-secundario" id="botao-cancelar-atividade">Cancelar edição</button>
+                            </div>
+                        </form>
+                        <p class="aviso-rota erro" id="aviso-atividade" role="alert" aria-live="polite" hidden></p>
+
+                        <div class="painel-filtros">
+                            <div class="campo-form">
+                                <label for="filtro-atividade-data">Filtrar por data</label>
+                                <input type="date" id="filtro-atividade-data">
+                            </div>
+                            <div class="campo-form">
+                                <label for="filtro-atividade-cidade">Filtrar por cidade</label>
+                                <select id="filtro-atividade-cidade">
+                                    <option value="">Todas as cidades</option>
+                                </select>
+                            </div>
+                            <button type="button" class="botao-tabela excluir" id="botao-limpar-atividades">Limpar programação</button>
+                        </div>
+
+                        <div class="tabela-responsiva">
+                            <table class="tabela-despesas tabela-painel">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Data</th>
+                                        <th scope="col">Início</th>
+                                        <th scope="col">Cidade</th>
+                                        <th scope="col">Atividade</th>
+                                        <th scope="col">Horas</th>
+                                        <th scope="col">Observações</th>
+                                        <th scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-atividades"></tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="bloco-campos">
+                        <legend>Cidades e mapa de destinos</legend>
+                        <form class="formulario-despesa formulario-cidade" id="formulario-cidade" autocomplete="off">
+                            <div class="grid-campos">
+                                <div class="campo-form">
+                                    <label for="cidade-nome">Cidade</label>
+                                    <input type="text" id="cidade-nome" maxlength="80" placeholder="Ex.: Curitiba">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="cidade-dias">Dias na cidade</label>
+                                    <input type="number" id="cidade-dias" min="0" step="1" inputmode="numeric" placeholder="Ex.: 3">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="cidade-latitude">Latitude</label>
+                                    <input type="number" id="cidade-latitude" step="any" inputmode="decimal" placeholder="Ex.: -25.4284">
+                                </div>
+                                <div class="campo-form">
+                                    <label for="cidade-longitude">Longitude</label>
+                                    <input type="number" id="cidade-longitude" step="any" inputmode="decimal" placeholder="Ex.: -49.2733">
+                                </div>
+                            </div>
+                            <div class="acoes-rota">
+                                <button type="button" class="botao-secundario" id="botao-usar-coordenada">Buscar no mapa existente</button>
+                                <button type="submit" class="botao-primario" id="botao-salvar-cidade">Salvar cidade</button>
+                                <button type="button" class="botao-secundario" id="botao-cancelar-cidade">Cancelar edição</button>
+                                <button type="button" class="botao-secundario" id="botao-centralizar-cidades">Centralizar cidades no mapa</button>
+                            </div>
+                        </form>
+                        <p class="aviso-rota erro" id="aviso-cidade" role="alert" aria-live="polite" hidden></p>
+                        <p class="aviso-rota info" id="aviso-mapa-painel" role="status" aria-live="polite" hidden></p>
+
+                        <div class="tabela-responsiva">
+                            <table class="tabela-despesas tabela-painel">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Cidade</th>
+                                        <th scope="col">Dias informados</th>
+                                        <th scope="col">Dias nas atividades</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">Coordenadas</th>
+                                        <th scope="col">Percentual</th>
+                                        <th scope="col">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-cidades"></tbody>
+                            </table>
+                        </div>
+                        <div class="painel-total-linha">
+                            <span>As cidades usam o mapa já carregado na seção Mapa e Rotas.</span>
+                            <button type="button" class="botao-tabela excluir" id="botao-limpar-cidades">Limpar cidades</button>
+                        </div>
+                    </fieldset>
+
+                    <div class="painel-graficos">
+                        <article class="cartao-grafico">
+                            <h3>Horas por dia</h3>
+                            <div class="grafico-painel" id="grafico-horas-dia" role="img" aria-label="Gráfico de horas por dia"></div>
+                        </article>
+                        <article class="cartao-grafico">
+                            <h3>Planejado x realizado por data</h3>
+                            <div class="grafico-painel" id="grafico-orcamento-realizado" role="img" aria-label="Gráfico de valores planejados e realizados por data"></div>
+                        </article>
+                        <article class="cartao-grafico">
+                            <h3>Custos por categoria</h3>
+                            <div class="grafico-painel grafico-rosca" id="grafico-categorias" role="img" aria-label="Gráfico de rosca dos custos por categoria"></div>
+                            <div class="legenda-grafico" id="legenda-categorias"></div>
+                        </article>
+                        <article class="cartao-grafico">
+                            <h3>Pagos e pendentes</h3>
+                            <div class="indicadores-pagamento">
+                                <div><span>Total pago</span><strong id="indicador-pago">&mdash;</strong></div>
+                                <div><span>Percentual pago</span><strong id="indicador-percentual-pago">&mdash;</strong></div>
+                                <div><span>Total pendente</span><strong id="indicador-pendente">&mdash;</strong></div>
+                                <div><span>Percentual pendente</span><strong id="indicador-percentual-pendente">&mdash;</strong></div>
+                            </div>
+                            <div class="grafico-painel" id="grafico-pagos-pendentes" role="img" aria-label="Gráfico de pagos e pendentes"></div>
+                        </article>
+                        <article class="cartao-grafico">
+                            <h3>Dias por cidade</h3>
+                            <div class="grafico-painel" id="grafico-dias-cidade" role="img" aria-label="Gráfico de dias por cidade"></div>
+                        </article>
+                    </div>
+
+                    <fieldset class="bloco-campos">
+                        <legend>Exportação</legend>
+                        <p>O PDF reúne resumo da viagem, orçamento e custo real, categorias, pagamentos, cidades e programação. Ele usa a mesma biblioteca gratuita do histórico.</p>
+                        <div class="acoes-rota">
+                            <button type="button" class="botao-primario" id="botao-exportar-painel-pdf">Exportar painel em PDF</button>
+                        </div>
+                        <p class="aviso-rota erro" id="aviso-painel-pdf" role="alert" aria-live="polite" hidden></p>
+                    </fieldset>
+
+                    <p class="fonte-dados">Dados do painel: armazenamento local deste navegador. Nenhuma chave existente é apagada; o painel usa apenas suas próprias chaves e serviços já presentes no projeto.</p>
+                </section>
+            </main>
+
+            <footer class="rodape">
+                <p>&copy; <span id="ano">2026</span> Meu Planejador de Viagens. Funciona localmente no seu computador. <span class="versao-app">Versão 9 · Painel da Viagem</span></p>
+            </footer>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" hidden></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="js/app.js?v=9"></script>
+    <script src="js/mapa.js?v=9"></script>
+    <script src="js/combustivel.js?v=9"></script>
+    <script src="js/velocidade.js?v=9"></script>
+    <script src="js/despesas.js?v=9"></script>
+    <script src="js/resumo.js?v=9"></script>
+    <script src="js/historico.js?v=9"></script>
+    <script src="js/tripDashboard.js?v=9"></script>
+</body>
+</html>
